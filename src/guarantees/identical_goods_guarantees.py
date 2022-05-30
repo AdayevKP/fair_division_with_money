@@ -1,12 +1,9 @@
 import numpy as np
-import typing as tp
-import itertools as it
-
 
 from src.guarantees import guarantees
 
 
-def guarantee_sb_2(utility: np.ndarray):
+def _guarantee_sb_2(utility: np.ndarray):
     u_size = utility.size
     m = utility.size - 1
     u = utility
@@ -24,7 +21,7 @@ def guarantee_sb_2(utility: np.ndarray):
 
 def guarantee_sb(utility: np.ndarray, n=2):
     if n == 2:
-        return guarantee_sb_2(utility)
+        return _guarantee_sb_2(utility)
 
     raise ValueError(
         'sell and buy rule guarantee not implemented for more than 2 goods'
@@ -38,6 +35,10 @@ def guarantee_dc(utility: np.ndarray, n=2):
     raise ValueError(
         'divide and choose rule guarantee not implemented for more than 2 goods'
     )
+
+
+def familiar_share(utility: np.ndarray, n=2):
+    return utility[-1] / n
 
 
 def max_min(utility: np.ndarray, n=2):
