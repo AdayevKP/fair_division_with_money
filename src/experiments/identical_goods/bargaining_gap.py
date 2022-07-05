@@ -1,7 +1,7 @@
 import operator as op
 import numpy as np
 
-from src.guarantees import identical_goods_guarantees as gr
+from src.experiments.identical_goods import guarantees as gr
 from src.experiments.identical_goods import utility as ut
 
 fst = op.itemgetter(0)

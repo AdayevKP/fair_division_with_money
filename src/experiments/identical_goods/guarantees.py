@@ -1,8 +1,8 @@
 import numpy as np
 import typing as tp
-import itertools as it
 
 from src import utility
+from src.experiments.identical_goods import helpers
 
 
 def _guarantee_sb_2(u: utility.Utility, goods_num):
@@ -43,12 +43,7 @@ def familiar_share(u: utility.Utility, goods_num, agents_number=2):
 
 
 def partitions_utilities(utility_profile: tp.List[utility.Utility], goods_num):
-    m = goods_num
-
-    partitions = [
-        comb for comb in it.product(range(m + 1), repeat=len(utility_profile))
-        if sum(comb) == m
-    ]
+    partitions = helpers.goods_partitions(len(utility_profile), goods_num)
     return [
         sum(u(p) for p, u in zip(prt, utility_profile))
         for prt in partitions

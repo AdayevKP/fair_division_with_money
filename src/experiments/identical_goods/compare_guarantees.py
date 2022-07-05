@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from src.guarantees import identical_goods_guarantees as gr
+from src.experiments.identical_goods import guarantees as gr
 from src.experiments.identical_goods import utility
 
 
