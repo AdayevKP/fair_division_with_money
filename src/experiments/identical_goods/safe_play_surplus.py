@@ -17,10 +17,11 @@ def run():
 
     utility_profile = [u1, u2]
 
+    dc2_surplus = auctions.DivideAndChoose2(utility_profile, goods_num).run()
     dc1_surplus = auctions.DivideAndChoose1(utility_profile, goods_num).run()
     u_p = gr.partitions_utilities(utility_profile, goods_num)
 
-    print(min(u_p), dc1_surplus, max(u_p))
+    print(min(u_p), dc1_surplus, dc2_surplus, max(u_p))
 
 
 if __name__ == "__main__":

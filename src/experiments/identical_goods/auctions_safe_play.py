@@ -1,4 +1,5 @@
 import typing as tp
+import numpy as np
 
 from src import auctions
 from src.experiments.identical_goods import guarantees as gr
@@ -6,24 +7,29 @@ from src.experiments.identical_goods import utility
 from src.experiments.identical_goods import helpers
 
 
-class DivideAndChoose1:
+class Auction:
     def __init__(
             self,
             agents_utilities: tp.List[utility.IdenticalGoodsUtility],
             goods_num: int
     ):
-        self._agents_num = len(agents_utilities)
-        self._goods_num = goods_num
-        self._utilities = agents_utilities
+        self.agents_num = len(agents_utilities)
+        self.goods_num = goods_num
+        self.utilities = agents_utilities
 
+    def run(self):
+        raise NotImplementedError()
+
+
+class DivideAndChoose1(Auction):
     def _make_bids(self) -> tp.List[float]:
-        n = self._agents_num
+        n = self.agents_num
 
         bids = []
-        for u in self._utilities:
+        for u in self.utilities:
             bid = (
-                    gr.max_min_single(u, self._goods_num, n) -
-                    gr.min_max_single(u, self._goods_num, n)
+                    gr.max_min_single(u, self.goods_num, n) -
+                    gr.min_max_single(u, self.goods_num, n)
             )
             bids.append(bid)
 
@@ -32,24 +38,45 @@ class DivideAndChoose1:
     def _choose_partition(
             self, divider_utility: utility.IdenticalGoodsUtility
     ) -> tp.List[int]:
-        partitions = helpers.goods_partitions(self._agents_num, self._goods_num)
+        partitions = helpers.goods_partitions(self.agents_num, self.goods_num)
         partitions_utilities = [
             sum([divider_utility(goods_num) for goods_num in partition])
             for partition in partitions
         ]
 
-        max_utility = max(partitions_utilities)
-        best_partition_idx = partitions_utilities.index(max_utility)
+        best_partition_idx = np.argmax(partitions_utilities)
 
         return partitions[best_partition_idx]
 
     def run(self) -> auctions.TotalSurplus:
         bids: tp.List[float] = self._make_bids()
 
-        max_bid = max(bids)
-        divider_index = bids.index(max_bid)
+        divider_index = np.argmax(bids)
+        partition = self._choose_partition(self.utilities[divider_index])
 
-        partition = self._choose_partition(self._utilities[divider_index])
+        return auctions.PiAuction(self.utilities, partition).run()
 
-        return auctions.PiAuction(self._utilities, partition).run()
+
+class DivideAndChoose2(Auction):
+    def _propose_partitions(self):
+        all_partitions: tp.List[tp.List[int]] = helpers.goods_partitions(
+            self.agents_num, self.goods_num
+        )
+
+        selected_partitions = []
+
+        for u in self.utilities:
+            partitions_utilities = [
+                sum(u(p) for p in partition)
+                for partition in all_partitions
+            ]
+            partition_idx = np.argmax(partitions_utilities)
+            selected_partitions.append(all_partitions[partition_idx])
+
+        return selected_partitions
+
+    def run(self):
+        partitions: tp.List[tp.List[int]] = self._propose_partitions()
+        avg_auction = auctions.AveragingAuction(self.utilities, partitions)
+        return avg_auction.run()
 

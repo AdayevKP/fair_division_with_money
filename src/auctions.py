@@ -99,8 +99,8 @@ class AveragingAuction:
     def run(self) -> TotalSurplus:
         transfers = self._make_transfers()
         gr_transfers_sums = [sum(gr_tr) for gr_tr in zip(*transfers)]
-        min_sum = min(gr_transfers_sums)
-        min_sum_index = gr_transfers_sums.index(min_sum)
+
+        min_sum_index = np.argmin(gr_transfers_sums)
 
         partition = self._partitions[min_sum_index]
         return PiAuction(self._utilities, partition).run()
