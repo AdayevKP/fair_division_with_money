@@ -51,5 +51,5 @@ class DivideAndChoose1:
 
         partition = self._choose_partition(self._utilities[divider_index])
 
-        return auctions.pi_auction(self._utilities, partition)
+        return auctions.PiAuction(self._utilities, partition).run()
 
