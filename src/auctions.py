@@ -2,9 +2,12 @@ import numpy as np
 import typing as tp
 import itertools as it
 
+from src import guarantees as gr
 from src import utility
 
 from src.experiments.identical_goods import utility as ig_utility
+from src.experiments.identical_goods import helpers as ig_helpers
+
 
 TotalSurplus = float
 
@@ -64,7 +67,46 @@ class PiAuction:
         return total_surplus
 
 
-if __name__ == '__main__':
+class AveragingAuction:
+    def __init__(
+            self,
+            agents_utilities: tp.List[utility.Utility],
+            agents_partitions: tp.List[tp.List],
+    ):
+        self._partitions = agents_partitions
+        self._utilities = agents_utilities
+        self._agents_num = len(self._utilities)
+
+    def _single_agent_transfers(
+            self, agent_utility: utility.Utility
+    ) -> tp.List[float]:
+        mean_gr = sum(
+            gr.fixed_partition_guarantee(p, agent_utility)
+            for p in self._partitions
+        ) / len(self._partitions)
+
+        return [
+            mean_gr - gr.fixed_partition_guarantee(p, agent_utility)
+            for p in self._partitions
+        ]
+
+    def _make_transfers(self) -> tp.List[tp.List[float]]:
+        return [
+            self._single_agent_transfers(u)
+            for u in self._utilities
+        ]
+
+    def run(self) -> TotalSurplus:
+        transfers = self._make_transfers()
+        gr_transfers_sums = [sum(gr_tr) for gr_tr in zip(*transfers)]
+        min_sum = min(gr_transfers_sums)
+        min_sum_index = gr_transfers_sums.index(min_sum)
+
+        partition = self._partitions[min_sum_index]
+        return PiAuction(self._utilities, partition).run()
+
+
+def test_pi_auction():
     utilities = []
     for _ in range(2):
         samples_delta = np.random.uniform(low=0.0, high=1.0, size=10)  # noqa
@@ -73,3 +115,23 @@ if __name__ == '__main__':
 
     res = PiAuction(utilities, [8, 2]).run()
     print(res)
+
+
+def test_avg_auction():
+    utilities = []
+    for _ in range(2):
+        samples_delta = np.random.uniform(low=0.0, high=1.0, size=10)  # noqa
+        ut, *_ = ig_utility.gen_utility_profiles(samples_delta)
+        utilities.append(ut)
+
+    res = AveragingAuction(
+        utilities,
+        ig_helpers.goods_partitions(2, 10)
+    ).run()
+
+    print(res)
+
+
+if __name__ == '__main__':
+    test_avg_auction()
+    test_pi_auction()
