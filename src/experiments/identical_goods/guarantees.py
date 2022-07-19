@@ -5,7 +5,7 @@ from src import utility
 from src.experiments.identical_goods import helpers
 
 
-def _guarantee_sb_2(u: utility.Utility, goods_num):
+def guarantee_sb_2(u: utility.Utility, goods_num):
     m = goods_num
 
     x = np.zeros((m + 1, m + 1))
@@ -16,12 +16,18 @@ def _guarantee_sb_2(u: utility.Utility, goods_num):
             x[k][l] = m * (u(l + k) - u(l)) / (m + k)
 
     k_max, l_max = np.unravel_index(np.argmax(x, axis=None), x.shape)
-    return (l_max + k_max) * u(l_max) / (m + k_max) + (m - l_max) * u(l_max + k_max) / (m + k_max)
+    optimal_bid = x[k_max][l_max]
+    return (
+            (l_max + k_max) * u(l_max) / (m + k_max) +
+            (m - l_max) * u(l_max + k_max) / (m + k_max),
+            optimal_bid
+    )
 
 
 def guarantee_sb(u: utility.Utility, goods_num, agents_number=2):
     if agents_number == 2:
-        return _guarantee_sb_2(u, goods_num)
+        gr, _ = guarantee_sb_2(u, goods_num)
+        return gr
 
     raise ValueError(
         'sell and buy rule guarantee not implemented for more than 2 agents'

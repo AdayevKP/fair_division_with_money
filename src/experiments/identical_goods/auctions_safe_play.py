@@ -17,7 +17,7 @@ class Auction:
         self.goods_num = goods_num
         self.utilities = agents_utilities
 
-    def run(self):
+    def run(self) -> auctions.TotalSurplus:
         raise NotImplementedError()
 
 
@@ -75,8 +75,37 @@ class DivideAndChoose2(Auction):
 
         return selected_partitions
 
-    def run(self):
+    def run(self) -> auctions.TotalSurplus:
         partitions: tp.List[tp.List[int]] = self._propose_partitions()
         avg_auction = auctions.AveragingAuction(self.utilities, partitions)
         return avg_auction.run()
+
+
+class SellAndBuy2Agents(Auction):
+    def _make_bids(self):
+        bids = []
+        for u in self.utilities:
+            _, bid = gr.guarantee_sb_2(u, self.goods_num)
+            bids.append(bid)
+
+        return bids
+
+    def run(self) -> auctions.TotalSurplus:
+        bids = self._make_bids()
+        seller_index = np.argmin(bids)
+
+        seller_utility = self.utilities[seller_index]
+        buyer_utility = self.utilities[seller_index - 1]
+
+        price = seller_utility(self.goods_num) / self.goods_num
+
+        bought_goods = np.argmax(
+            [buyer_utility(k) - price * k for k in range(self.goods_num)]
+        )
+        goods_price = price * bought_goods
+
+        return (
+            buyer_utility(bought_goods) - goods_price +
+            seller_utility(self.goods_num - bought_goods) + goods_price
+        )
 
