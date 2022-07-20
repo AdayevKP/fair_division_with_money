@@ -18,9 +18,8 @@ def _iter_bijections(s1, s2):
         yield list(zip(s1, perm))
 
 
-@dc.dataclass
-class Allocation:
-    goods: tp.List[tp.Any]
+class Allocation(tp.NamedTuple):
+    goods: tp.Any
     transfer: float
 
 

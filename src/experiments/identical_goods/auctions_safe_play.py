@@ -54,7 +54,7 @@ class DivideAndChoose1(Auction):
         divider_index = np.argmax(bids)
         partition = self._choose_partition(self.utilities[divider_index])
 
-        return auctions.PiAuction(self.utilities, partition).run()
+        return auctions.PiAuction(self.utilities, partition).total_surplus()
 
 
 class DivideAndChoose2(Auction):
