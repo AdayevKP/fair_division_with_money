@@ -1,3 +1,4 @@
+import dataclasses as dc
 import numpy as np
 import typing as tp
 import itertools as it
@@ -13,8 +14,14 @@ TotalSurplus = float
 
 
 def _iter_bijections(s1, s2):
-    for perm in it.permutations(s1):
-        yield list(zip(perm, s2))
+    for perm in it.permutations(s2):
+        yield list(zip(s1, perm))
+
+
+@dc.dataclass
+class Allocation:
+    goods: tp.List[tp.Any]
+    transfer: float
 
 
 class PiAuction:
@@ -40,7 +47,7 @@ class PiAuction:
 
         return all_agents_transfers
 
-    def run(self) -> TotalSurplus:
+    def allocations(self):
         transfers = self._make_transfers()
 
         best_bij = []
@@ -58,13 +65,22 @@ class PiAuction:
 
         slack_per_agent = best_sum / self._agents_num
 
-        total_surplus = sum(
-            self._utilities[agent_idx](self._partition[part_idx]) +
-            transfers[agent_idx][part_idx] - slack_per_agent
+        return [
+            Allocation(
+                goods=self._partition[part_idx],
+                transfer=transfers[agent_idx][part_idx] - slack_per_agent
+            )
             for agent_idx, part_idx in best_bij
-        )
+        ]
 
-        return total_surplus
+    def total_surplus(self) -> TotalSurplus:
+        surplus = 0.0
+
+        for agent_idx, allocation in enumerate(self.allocations()):
+            surplus += self._utilities[agent_idx](allocation.goods)
+            surplus += allocation.transfer
+
+        return surplus
 
 
 class AveragingAuction:
@@ -103,7 +119,7 @@ class AveragingAuction:
         min_sum_index = np.argmin(gr_transfers_sums)
 
         partition = self._partitions[min_sum_index]
-        return PiAuction(self._utilities, partition).run()
+        return PiAuction(self._utilities, partition).total_surplus()
 
 
 def test_pi_auction():
@@ -113,7 +129,7 @@ def test_pi_auction():
         ut, *_ = ig_utility.gen_utility_profiles(samples_delta)
         utilities.append(ut)
 
-    res = PiAuction(utilities, [8, 2]).run()
+    res = PiAuction(utilities, [8, 2]).total_surplus()
     print(res)
 
 
