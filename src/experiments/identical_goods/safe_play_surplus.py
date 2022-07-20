@@ -17,9 +17,9 @@ def run():
 
     utility_profile = [u1, u2]
 
-    dc2_surplus = auctions.DivideAndChoose2(utility_profile, goods_num).run()
-    dc1_surplus = auctions.DivideAndChoose1(utility_profile, goods_num).run()
-    sb2_surplus = auctions.SellAndBuy2Agents(utility_profile, goods_num).run()
+    dc2_surplus = auctions.DivideAndChoose2(utility_profile, goods_num).total_surplus()
+    dc1_surplus = auctions.DivideAndChoose1(utility_profile, goods_num).total_surplus()
+    sb2_surplus = auctions.SellAndBuy2Agents(utility_profile, goods_num).total_surplus()
     u_p = gr.partitions_utilities(utility_profile, goods_num)
 
     print(min(u_p), dc1_surplus, dc2_surplus, sb2_surplus, max(u_p))

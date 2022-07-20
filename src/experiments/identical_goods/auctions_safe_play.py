@@ -17,7 +17,10 @@ class Auction:
         self.goods_num = goods_num
         self.utilities = agents_utilities
 
-    def run(self) -> auctions.TotalSurplus:
+    def total_surplus(self) -> auctions.TotalSurplus:
+        raise NotImplementedError()
+
+    def allocations(self) -> tp.List[auctions.Allocation]:
         raise NotImplementedError()
 
 
@@ -35,9 +38,11 @@ class DivideAndChoose1(Auction):
 
         return bids
 
-    def _choose_partition(
-            self, divider_utility: utility.IdenticalGoodsUtility
-    ) -> tp.List[int]:
+    def _choose_partition(self) -> tp.Tuple[tp.List[int], tp.List[float]]:
+        bids: tp.List[float] = self._make_bids()
+        divider_index = np.argmax(bids)
+        divider_utility = self.utilities[divider_index]
+
         partitions = helpers.goods_partitions(self.agents_num, self.goods_num)
         partitions_utilities = [
             sum([divider_utility(goods_num) for goods_num in partition])
@@ -46,14 +51,28 @@ class DivideAndChoose1(Auction):
 
         best_partition_idx = np.argmax(partitions_utilities)
 
-        return partitions[best_partition_idx]
+        divider_transfer = bids[divider_index]/self.agents_num
+        transfers = [divider_transfer]*self.agents_num
+        transfers[divider_index] *= -divider_transfer*(self.agents_num-1)
 
-    def run(self) -> auctions.TotalSurplus:
-        bids: tp.List[float] = self._make_bids()
+        return partitions[best_partition_idx], transfers
 
-        divider_index = np.argmax(bids)
-        partition = self._choose_partition(self.utilities[divider_index])
+    def allocations(self):
+        partition, transfers = self._choose_partition()
+        pi_allocations = auctions.PiAuction(
+            self.utilities, partition
+        ).allocations()
 
+        return [
+            auctions.Allocation(
+                goods=al.goods,
+                transfer=al.transfer + tr
+            )
+            for tr, al in zip(transfers, pi_allocations)
+        ]
+
+    def total_surplus(self) -> auctions.TotalSurplus:
+        partition, _ = self._choose_partition()
         return auctions.PiAuction(self.utilities, partition).total_surplus()
 
 
@@ -75,7 +94,7 @@ class DivideAndChoose2(Auction):
 
         return selected_partitions
 
-    def run(self) -> auctions.TotalSurplus:
+    def total_surplus(self) -> auctions.TotalSurplus:
         partitions: tp.List[tp.List[int]] = self._propose_partitions()
         avg_auction = auctions.AveragingAuction(self.utilities, partitions)
         return avg_auction.total_surplus()
@@ -90,7 +109,7 @@ class SellAndBuy2Agents(Auction):
 
         return bids
 
-    def run(self) -> auctions.TotalSurplus:
+    def total_surplus(self) -> auctions.TotalSurplus:
         bids = self._make_bids()
         seller_index = np.argmin(bids)
 
