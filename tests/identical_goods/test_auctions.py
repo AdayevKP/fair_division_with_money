@@ -16,7 +16,7 @@ def test_pi_auction(utility):
     agent1 = [0, 1, 4, 9]
     agent2 = [0, 2, 7, 10]
 
-    # 1 good for and 2 goods
+    # 1 good and 2 goods
     partition = [1, 2]
 
     pi_auction = auctions.PiAuction(
@@ -40,8 +40,51 @@ def test_pi_auction(utility):
         auctions.Allocation(goods=1, transfer=1.5 + 0.5),
         auctions.Allocation(goods=2, transfer=-2.5 + 0.5),
     ]
-    "sum only utilities because money returned back"
+    "sum only utilities because money sum to 0"
     assert pi_auction.total_surplus() == 1 + 7
 
 
+def test_averaging_auction(utility):
+    agent1 = [0, 1, 4, 9]
+    agent2 = [0, 2, 7, 10]
+
+    partition1 = [1, 2]
+    partition2 = [0, 3]
+
+    avg_auction = auctions.AveragingAuction(
+        agents_utilities=[utility(agent1), utility(agent2)],
+        agents_partitions=[partition1, partition2]
+    )
+
+    """
+    agent1:
+        meanG = ((1 + 4)/2 + 9/2)/2 = 3
+        G11 = (1 + 4)/2 = 1.5; t11 = 3 - 1.5 = 1.5
+        G12 = 9/2 = 4.5;       t12 = 3 - 4.5 = -1.5
+        
+    agent1:
+        meanG = ((2 + 7)/2 + 10/2)/2 = 4.75
+        G21 = (2 + 7)/2 = 4.5; t21 = 4.75 - 4.5 = 0.25
+        G22 = 10/2 = 5;        t22 = 4.75 - 5   = -0.25
+        
+    max = G12 + G22 -> choose partition2 
+    slack = (t21 + t12)/2 = (0.25 - 1.5)/2 = -0.625
+    
+    pi auction
+    agent1: u(0) = 0, u(3) = 9
+            t11 = 4.5   t12 = -4.5
+            
+    agent2: u(0) = 0, u(3) = 10
+            t12 = 5    t22 = -5
+            
+    sum[t12, t21] = 0.5
+    sum[t11, t22] = -0.5 -> choose this allocation
+    slack = -0.25
+    """
+
+    assert avg_auction.allocations() == [
+        auctions.Allocation(goods=0, transfer=4.5+0.25),
+        auctions.Allocation(goods=3, transfer=-5+0.25),
+    ]
+    assert avg_auction.total_surplus() == 0 + 10
 

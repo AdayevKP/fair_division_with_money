@@ -78,7 +78,7 @@ class DivideAndChoose2(Auction):
     def run(self) -> auctions.TotalSurplus:
         partitions: tp.List[tp.List[int]] = self._propose_partitions()
         avg_auction = auctions.AveragingAuction(self.utilities, partitions)
-        return avg_auction.run()
+        return avg_auction.total_surplus()
 
 
 class SellAndBuy2Agents(Auction):

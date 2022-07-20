@@ -46,7 +46,7 @@ class PiAuction:
 
         return all_agents_transfers
 
-    def allocations(self):
+    def allocations(self) -> tp.List[Allocation]:
         transfers = self._make_transfers()
 
         best_bij = []
@@ -111,14 +111,23 @@ class AveragingAuction:
             for u in self._utilities
         ]
 
-    def run(self) -> TotalSurplus:
+    def _choose_partition(self):
         transfers = self._make_transfers()
         gr_transfers_sums = [sum(gr_tr) for gr_tr in zip(*transfers)]
 
         min_sum_index = np.argmin(gr_transfers_sums)
 
-        partition = self._partitions[min_sum_index]
-        return PiAuction(self._utilities, partition).total_surplus()
+        return self._partitions[min_sum_index]
+
+    def allocations(self) -> tp.List[Allocation]:
+        return PiAuction(
+            self._utilities, self._choose_partition()
+        ).allocations()
+
+    def total_surplus(self) -> TotalSurplus:
+        return PiAuction(
+            self._utilities, self._choose_partition()
+        ).total_surplus()
 
 
 def test_pi_auction():
@@ -142,7 +151,7 @@ def test_avg_auction():
     res = AveragingAuction(
         utilities,
         ig_helpers.goods_partitions(2, 10)
-    ).run()
+    ).total_surplus()
 
     print(res)
 
