@@ -58,17 +58,17 @@ def test_averaging_auction(utility):
 
     """
     agent1:
-        meanG = ((1 + 4)/2 + 9/2)/2 = 3
-        G11 = (1 + 4)/2 = 1.5; t11 = 3 - 1.5 = 1.5
-        G12 = 9/2 = 4.5;       t12 = 3 - 4.5 = -1.5
+        meanG = ((1 + 4)/2 + 9/2)/2 = 3.5
+        G11 = (1 + 4)/2 = 2.5; t11 = 3.5 - 2.5 = 1
+        G12 = 9/2 = 4.5;       t12 = 3.5 - 4.5 = -1
         
-    agent1:
+    agent2:
         meanG = ((2 + 7)/2 + 10/2)/2 = 4.75
         G21 = (2 + 7)/2 = 4.5; t21 = 4.75 - 4.5 = 0.25
         G22 = 10/2 = 5;        t22 = 4.75 - 5   = -0.25
         
     max = G12 + G22 -> choose partition2 
-    slack = (t21 + t12)/2 = (0.25 - 1.5)/2 = -0.625
+    slack = (t22 + t12)/2 = (-0.25 - 1)/2 = -0.625
     
     pi auction
     agent1: u(0) = 0, u(3) = 9
@@ -83,8 +83,8 @@ def test_averaging_auction(utility):
     """
 
     assert avg_auction.allocations() == [
-        auctions.Allocation(goods=0, transfer=4.5+0.25),
-        auctions.Allocation(goods=3, transfer=-5+0.25),
+        auctions.Allocation(goods=0, transfer=4.5-1+0.25+0.625),
+        auctions.Allocation(goods=3, transfer=-5-0.25+0.25+0.625),
     ]
     assert avg_auction.total_surplus() == 0 + 10
 
