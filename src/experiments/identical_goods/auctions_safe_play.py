@@ -94,6 +94,11 @@ class DivideAndChoose2(Auction):
 
         return selected_partitions
 
+    def allocations(self) -> tp.List[auctions.Allocation]:
+        partitions: tp.List[tp.List[int]] = self._propose_partitions()
+        avg_auction = auctions.AveragingAuction(self.utilities, partitions)
+        return avg_auction.allocations()
+
     def total_surplus(self) -> auctions.TotalSurplus:
         partitions: tp.List[tp.List[int]] = self._propose_partitions()
         avg_auction = auctions.AveragingAuction(self.utilities, partitions)
