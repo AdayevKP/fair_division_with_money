@@ -114,22 +114,35 @@ class SellAndBuy2Agents(Auction):
 
         return bids
 
-    def total_surplus(self) -> auctions.TotalSurplus:
+    def allocations(self) -> tp.List[auctions.Allocation]:
         bids = self._make_bids()
-        seller_index = np.argmin(bids)
+        seller_index = int(np.argmin(bids))
+        buyer_index = seller_index - 1
 
-        seller_utility = self.utilities[seller_index]
-        buyer_utility = self.utilities[seller_index - 1]
-
-        price = seller_utility(self.goods_num) / self.goods_num
+        buyer_utility = self.utilities[buyer_index]
+        price = bids[seller_index] / self.goods_num
 
         bought_goods = np.argmax(
-            [buyer_utility(k) - price * k for k in range(self.goods_num)]
+            [buyer_utility(k) - price * k for k in range(self.goods_num + 1)]
         )
         goods_price = price * bought_goods
 
-        return (
-            buyer_utility(bought_goods) - goods_price +
-            seller_utility(self.goods_num - bought_goods) + goods_price
+        allocations = [
+            auctions.Allocation(
+                goods=self.goods_num - bought_goods, transfer=goods_price
+            ),
+            auctions.Allocation(
+                goods=bought_goods, transfer=-goods_price
+            )
+        ]
+        if seller_index == 1:
+            allocations[0], allocations[1] = allocations[1], allocations[0]
+
+        return allocations
+
+    def total_surplus(self) -> auctions.TotalSurplus:
+        return sum(
+            ut(al.goods) + al.transfer
+            for al, ut in zip(self.allocations(), self.utilities)
         )
 

@@ -67,7 +67,7 @@ class TestDC1:
         assert dc1_auction.total_surplus() == 2 + 7
 
 
-class TestDc2:
+class TestDС2:
     def test1(self, utility):
         agent1 = [0, 1, 4, 9]
         agent2 = [0, 2, 9, 10]
@@ -129,3 +129,49 @@ class TestDc2:
             auctions.Allocation(goods=1, transfer=1+0+0.5+0.25),
         ]
         assert dc2_auction.total_surplus() == 7 + 2
+
+
+class TestSB:
+    def test1(self, utility):
+        agent1 = [0, 1, 4, 9]
+        agent2 = [0, 2, 7, 10]
+
+        """
+        step1: bids
+            agent1:
+            
+              l 0,   1,   2,   3
+            k 
+            0   0    0    0    0
+            1   0.75 2.25 3.75
+            2   2.4  4.8  
+            3   4.5
+            optimal bid = 4.8
+            agent1 becomes seller
+            
+            agent2:
+              l 0,   1,   2,   3
+            k 
+            0   0    0    0    0
+            1   1.5  3.75 2.25
+            2   4.2  4.8  
+            3   5
+            optimal bid = 5
+            
+        stage2: 
+            agent1 set prices = 4.8/3 = 1.6
+            
+        stage3:
+            agent2 buy [0, 2 - 1.6, 7 - 2*1.6, 10 - 3*1.6]
+            agent2 bought 3 goods
+        """
+
+        sb2_auction = ig_auctions.SellAndBuy2Agents(
+            agents_utilities=[utility(agent1), utility(agent2)],
+            goods_num=3
+        )
+
+        assert sb2_auction.allocations() == [
+            (0, pytest.approx(1.6*3)),
+            (3, pytest.approx(-1.6*3)),
+        ]
