@@ -175,3 +175,19 @@ class TestSB:
             (0, pytest.approx(1.6*3)),
             (3, pytest.approx(-1.6*3)),
         ]
+        assert sb2_auction.total_surplus() == 10 + 0
+
+    def test2(self, utility):
+        agent1 = [0, 5, 7, 8]
+        agent2 = [0, 2, 3, 9]
+
+        sb2_auction = ig_auctions.SellAndBuy2Agents(
+            agents_utilities=[utility(agent1), utility(agent2)],
+            goods_num=3
+        )
+
+        assert sb2_auction.allocations() == [
+            (0, pytest.approx(-4.2)),
+            (3, pytest.approx(4.2)),
+        ]
+
