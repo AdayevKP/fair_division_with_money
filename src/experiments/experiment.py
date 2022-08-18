@@ -1,4 +1,5 @@
 import itertools as it
+import os
 import typing as tp
 
 import pandas as pd
@@ -16,12 +17,17 @@ class Experiment:
         raise NotImplementedError
 
     def run_and_save(self, experiments_number):
+        if os.path.exists(self.result_path):
+            return
+
         self._data.clear()
 
         for _ in range(experiments_number):
             self._run_experiment()
 
         result_data = pd.DataFrame(columns=self.columns, data=self._data)
+
+        os.makedirs(os.path.dirname(self.result_path), exist_ok=False)
         result_data.to_csv(self.result_path)
         self._data.clear()
 
