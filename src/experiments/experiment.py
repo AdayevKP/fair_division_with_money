@@ -27,7 +27,7 @@ class Experiment:
 
         result_data = pd.DataFrame(columns=self.columns, data=self._data)
 
-        os.makedirs(os.path.dirname(self.result_path), exist_ok=False)
+        os.makedirs(os.path.dirname(self.result_path), exist_ok=True)
         result_data.to_csv(self.result_path)
         self._data.clear()
 
