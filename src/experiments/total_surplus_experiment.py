@@ -11,7 +11,7 @@ from src.experiments.identical_goods import auctions_safe_play as auctions
 
 
 class TotalSurplusExperiment(experiment.Experiment):
-    result_path = 'results/total_surplus.csv'
+    result_path = 'data/total_surplus.csv'
     columns = {
         'utility_type',
 

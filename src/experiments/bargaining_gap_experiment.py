@@ -10,7 +10,7 @@ from src.experiments.identical_goods import guarantees as gr
 
 
 class BargainingGapExperiment(experiment.Experiment):
-    result_path = 'results/bargaining_gap.csv'
+    result_path = 'data/bargaining_gap.csv'
     columns = {
         'utility_type',
 

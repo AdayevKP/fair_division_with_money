@@ -9,7 +9,7 @@ from src.experiments.identical_goods import guarantees as gr
 
 
 class CompareGuaranteeExperiment(experiment.Experiment):
-    result_path = 'results/guarantees.csv'
+    result_path = 'data/guarantees.csv'
     columns = {
         'utility_type',
         'goods_num',
