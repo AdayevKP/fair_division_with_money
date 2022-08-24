@@ -13,6 +13,10 @@ class Experiment:
     def __init__(self):
         self._data = []
 
+    def set_params(self, new_prams: tp.Dict[str, tp.List[tp.Any]]):
+        assert set(new_prams).issubset(set(self.calculation_params))
+        self.calculation_params.update(new_prams)
+
     @staticmethod
     def _calc_normalized(
             funcs: tp.Dict[str, tp.Callable], norm_func, *args, **kwargs
@@ -27,7 +31,7 @@ class Experiment:
 
     def run_and_save(self, experiments_number):
         if os.path.exists(self.result_path):
-            return
+            os.remove(self.result_path)
 
         self._data.clear()
 
