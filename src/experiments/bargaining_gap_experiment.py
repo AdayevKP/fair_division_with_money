@@ -74,10 +74,12 @@ class BargainingGapExperiment(experiment.Experiment):
         for ut in self._make_utilities(goods_num, scale_param, mix_param):
             results.append(
                 {
-                    **{
-                        name: g(ut['utility'], goods_num)
-                        for name, g in guarantees.items()
-                    },
+                    **self._calc_normalized(
+                        guarantees,
+                        guarantees['max'],
+                        ut['utility'],
+                        goods_num
+                    ),
                     'utility_type': ut['name'],
                     'goods_num': goods_num,
                     'scale_param': scale_param,

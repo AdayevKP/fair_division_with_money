@@ -54,10 +54,12 @@ class CompareGuaranteeExperiment(experiment.Experiment):
         for ut in self._make_utilities(goods_num):
             results.append(
                 {
-                    **{
-                        name: g(ut['utility'], goods_num)
-                        for name, g in guarantees.items()
-                    },
+                    **self._calc_normalized(
+                        guarantees,
+                        guarantees['max_min_gr'],
+                        ut['utility'],
+                        goods_num
+                    ),
                     'utility_type': ut['name'],
                     'goods_num': goods_num
                 }

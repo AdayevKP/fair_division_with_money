@@ -13,6 +13,15 @@ class Experiment:
     def __init__(self):
         self._data = []
 
+    @staticmethod
+    def _calc_normalized(
+            funcs: tp.Dict[str, tp.Callable], norm_func, *args, **kwargs
+    ) -> tp.Dict[str, tp.Any]:
+        return {
+               name: f(*args, **kwargs)/norm_func(*args, **kwargs)
+               for name, f in funcs.items()
+           }
+
     def calculate(self, **kwargs) -> tp.List[tp.Dict]:
         raise NotImplementedError
 
