@@ -26,7 +26,7 @@ class BargainingGapExperiment(experiment.Experiment):
     }
 
     calculation_params = {
-        'goods_num': [3, 5, 10, 20],  # m
+        'goods_num': list(range(3, 21)),  # [3, 5, 10, 20],  # m
         'scale_param': [1, 1.5, 2, 5],  # lambda
         'mix_param': [0, 0.1, 0.5, 0.8],  # epsilon
     }

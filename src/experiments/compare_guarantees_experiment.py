@@ -22,7 +22,7 @@ class CompareGuaranteeExperiment(experiment.Experiment):
     }
 
     calculation_params = {
-        'goods_num': [3, 5, 10, 20]
+        'goods_num': list(range(3, 21))
     }
 
     class UtilityNames(enum.Enum):
