@@ -36,12 +36,7 @@ def guarantee_sb(u: utility.Utility, goods_num, agents_number=2):
 
 def guarantee_dc(u: utility.Utility, goods_num, agents_number=2):
     n = agents_number
-    if n == 2:
-        return max_min([u] * n, goods_num) / n + (n - 1) * min_max([u] * n, goods_num) / n
-
-    raise ValueError(
-        'divide and choose rule guarantee not implemented for more than 2 agents'
-    )
+    return max_min([u] * n, goods_num) / n + (n - 1) * min_max([u] * n, goods_num) / n
 
 
 def familiar_share(u: utility.Utility, goods_num, agents_number=2):

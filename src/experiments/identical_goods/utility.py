@@ -1,11 +1,6 @@
 import numpy as np
-import operator as op
 
 from src import utility
-
-
-fst = op.itemgetter(0)
-snd = op.itemgetter(1)
 
 
 class IdenticalGoodsUtility(utility.Utility):
