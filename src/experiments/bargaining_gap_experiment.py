@@ -91,7 +91,7 @@ class BargainingGapExperiment(experiment.Experiment):
 
 
 class BargainingGapMixedUtilitiesExperiment(BargainingGapExperiment):
-    result_path = 'results/bargaining_gap_mixed_utilities.csv'
+    result_path = 'data/bargaining_gap_mixed_utilities.csv'
 
     class UtilityNames(enum.Enum):
         random_concave = 'random-cav'
