@@ -12,7 +12,7 @@ from src.experiments.additive_utility_goods import (
 
 
 class TotalSurplusExperiment(experiment.Experiment):
-    result_path = 'data/total_surplus.csv'
+    result_path = 'data/additive_utilities/total_surplus.csv'
     columns = [
         'utility_type',
 
