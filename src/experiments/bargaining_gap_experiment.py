@@ -11,7 +11,7 @@ from src.experiments.identical_goods import guarantees as gr
 
 class BargainingGapExperiment(experiment.Experiment):
     result_path = 'data/bargaining_gap.csv'
-    columns = {
+    columns = [
         'utility_type',
 
         'goods_num',
@@ -23,7 +23,7 @@ class BargainingGapExperiment(experiment.Experiment):
         'familiar_share_gr_sum',
         'sb_gr_sum',
         'dc_gr_sum'
-    }
+    ]
 
     calculation_params = {
         'goods_num': list(range(3, 21)),  # [3, 5, 10, 20],  # m

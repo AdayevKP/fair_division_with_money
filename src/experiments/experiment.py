@@ -7,7 +7,7 @@ import pandas as pd
 
 class Experiment:
     result_path = ''
-    columns: tp.Set[str] = set()
+    columns: tp.List[str] = list()
     calculation_params: tp.Dict[str, tp.List[tp.Any]] = {}
 
     def __init__(self):
@@ -50,7 +50,7 @@ class Experiment:
             calc_params = dict(zip(keys, row))
             new_rows = self.calculate(**calc_params)
             for r in new_rows:
-                assert self.columns == set(r)
+                assert sorted(self.columns) == sorted(r)
             self._data.extend(new_rows)
 
     @classmethod

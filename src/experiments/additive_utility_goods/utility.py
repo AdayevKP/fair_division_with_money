@@ -9,6 +9,7 @@ class AdditiveGoodsUtility(utility.Utility):
     def __init__(self, utilities):
         self._utilities = utilities
 
+    # todo: make *goods instead of list
     def __call__(self, goods_indexes: tp.Iterable[int]):
         assert max(goods_indexes) < len(self._utilities)
         return sum(self._utilities[gi] for gi in goods_indexes)

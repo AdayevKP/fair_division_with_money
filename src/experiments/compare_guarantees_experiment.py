@@ -10,7 +10,7 @@ from src.experiments.identical_goods import guarantees as gr
 
 class CompareGuaranteeExperiment(experiment.Experiment):
     result_path = 'data/guarantees.csv'
-    columns = {
+    columns = [
         'utility_type',
         'goods_num',
 
@@ -19,7 +19,7 @@ class CompareGuaranteeExperiment(experiment.Experiment):
         'familiar_share_gr',
         'sb_gr',
         'dc_gr'
-    }
+    ]
 
     calculation_params = {
         'goods_num': list(range(3, 21))

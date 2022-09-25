@@ -12,7 +12,7 @@ from src.experiments.identical_goods import auctions_safe_play as auctions
 
 class TotalSurplusExperiment(experiment.Experiment):
     result_path = 'data/total_surplus.csv'
-    columns = {
+    columns = [
         'utility_type',
 
         'goods_num',
@@ -25,7 +25,7 @@ class TotalSurplusExperiment(experiment.Experiment):
         'dc2_total_surplus',
         'sb_total_surplus',
         'max_utility'
-    }
+    ]
 
     calculation_params = {
         'goods_num': [3, 5, 10, 20],  # m
