@@ -11,6 +11,8 @@ class AdditiveGoodsUtility(utility.Utility):
 
     # todo: make *goods instead of list
     def __call__(self, goods_indexes: tp.Iterable[int]):
+        if not goods_indexes:
+            return 0
         assert max(goods_indexes) < len(self._utilities)
         return sum(self._utilities[gi] for gi in goods_indexes)
 
